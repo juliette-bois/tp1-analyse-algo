@@ -1,3 +1,8 @@
+import math
+
+from Simplex import Simplex
+
+
 class Tree:
     def __init__(self):
         self.root = None
@@ -31,6 +36,38 @@ class Tree:
         for child in start.children:
             self.dfs_recursive(child[0], cycle)
         return cycle
+
+    def computeMinCouplage(self, graph):
+        nodes = list(filter(lambda node: len(node[1].children) % 2 != 0, self.nodes))
+        nodeTransform = []
+        for i, node in nodes:
+            try:
+                i = nodeTransform.index(nodes)
+            except ValueError:
+                nodeTransform.append(i)
+        result = [['0.0' for col in range(len(nodes))] for row in range(len(nodes))]
+        for i, node in nodes:
+            for child, weight in node.children:
+                if child.number in nodeTransform:
+                    i_index = nodeTransform.index(i)
+                    child_index = nodeTransform.index(child.number)
+                    result[i_index][child_index] = str(weight)
+                    result[child_index][i_index] = str(weight)
+        with open('input_graph', 'w+', encoding='UTF-8') as file:
+            file.write(str(len(nodes)) + '\n')
+            for line in result:
+                file.write(' '.join(line) + '\n')
+        Simplex.computeFile('input_graph', 'output_matching')
+        with open('output_matching', 'r+', encoding='UTF-8') as file:
+            n = float(file.readline().rstrip())
+            while line := file.readline().rstrip():
+                x, y = line.split(' ')
+                edge = graph.get_edge(nodeTransform[int(x)], nodeTransform[int(y)])
+                self.addNode(edge[0], edge[1], edge[2])
+
+
+def compute_distance(x1, y1, x2, y2):
+    return math.sqrt(math.pow(x2 - x1, 2) + math.pow(y2 - y1, 2))
 
 
 class TreeNode:

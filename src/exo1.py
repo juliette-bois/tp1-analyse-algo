@@ -52,7 +52,15 @@ def main(filename):
             else:
                 tree.addNode(child[1], child[0], child[2])
                 current = child[0]
-    cycle = tree.dfs()
+    dfsResult = tree.dfs()
+    cycle = []
+    i = 0
+    foundZero = False
+    while len(cycle) < len(dfsResult):
+        if (foundZero is True or dfsResult[i] == 0):
+            foundZero = True
+            cycle.append(dfsResult[i])
+        i = (i + 1) % len(dfsResult)
     cycle.append(cycle[0])
     weight = 0
     for i in range(len(cycle) - 1):
@@ -65,6 +73,6 @@ if __name__ == "__main__":
     import sys
 
     if len(sys.argv) != 2:
-        print("usage: {} image msg output".format(sys.argv[0]))
+        print("usage: {} file".format(sys.argv[0]))
         sys.exit(1)
     main(sys.argv[1])
